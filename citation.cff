@@ -1,0 +1,10 @@
+cff-version: 1.0.0
+message: "If you use this software/methodology, please cite it as below."
+authors:
+  - family-names: Helmbrecht
+    given-names: Hawley
+    orcid: https://orcid.org/0000-0002-4797-0130
+title: "Cell Morphology Flows"
+version: 1.0.0
+doi: 10.5281/zenodo.5716450
+date-released: 2021-11-20
