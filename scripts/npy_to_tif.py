@@ -58,21 +58,30 @@ for dirpath, dirnames, filenames in os.walk(root_directory):
             
             try:
                 # Load the .npy file
-                image_data = np.load(npy_path)
+                image_data = skimage.measure.label(np.load(npy_path))
 
                 # Normalize to uint8 if needed
-                #if image_data.dtype != np.uint8:
-                    #image_data = (255 * (image_data - image_data.min()) / (image_data.ptp() + 1e-8)).astype(np.uint8)
-
+                # Handle boolean arrays
+                if image_data.dtype == np.bool_:
+                    # Convert boolean to uint8 (True -> 255, False -> 0)
+                    image_data = (image_data * 255).astype(np.uint8)
+                else:
+                    # Normalize and scale image data to uint8 if it's not already
+                    if image_data.dtype != np.uint8:
+                        image_data = (
+                            255 * (image_data - image_data.min()) / (image_data.ptp() + 1e-8)
+                        ).astype(np.uint8)
+                        
                 # Construct the output TIFF file path
                 relative_path = os.path.relpath(dirpath, root_directory)
                 tiff_dir = os.path.join(output_dir, relative_path)
                 os.makedirs(tiff_dir, exist_ok=True)
-                tiff_path = os.path.join(tiff_dir, file.replace(".npy", ".tiff"))
+                tiff_path = os.path.join(tiff_dir, file.replace(".npy", ".tif"))
 
                 # Save as TIFF
-                Image.fromarray(image_data).save(tiff_path)
+                #Image.fromarray(image_data).save(tiff_path)
                 print(f"Converted: {npy_path} -> {tiff_path}")
+                io.imsave(tiff_path, image_data)
 
             except Exception as e:
                 print(f"Error processing '{npy_path}': {e}")
